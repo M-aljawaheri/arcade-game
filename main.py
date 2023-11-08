@@ -1,3 +1,4 @@
+import time
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
@@ -55,24 +56,71 @@ def Cube():
 
 x_angle = 0
 y_angle = 0
+rotate_left = rotate_right = rotate_up = rotate_down = False
+x_velocity = y_velocity = 0
+rotation_acceleration = 90  # Degrees per second per second
+rotation_decceleration = 1.5  # Degrees per second per second
 
 # Main loop
 running = True
+last_time = time.time()
 while running:
+    current_time = time.time()
+    delta_time = current_time - last_time
+    last_time = current_time
+
+
     # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                y_angle -= 5
-            if event.key == pygame.K_RIGHT:
-                y_angle += 5
-            if event.key == pygame.K_UP:
-                x_angle -= 5
-            if event.key == pygame.K_DOWN:
-                x_angle += 5
+        elif event.type == KEYDOWN:
+            if event.key == K_LEFT:
+                rotate_left = True
+            elif event.key == K_RIGHT:
+                rotate_right = True
+            elif event.key == K_UP:
+                rotate_up = True
+            elif event.key == K_DOWN:
+                rotate_down = True
+        elif event.type == KEYUP:
+            if event.key == K_LEFT:
+                rotate_left = False
+            elif event.key == K_RIGHT:
+                rotate_right = False
+            elif event.key == K_UP:
+                rotate_up = False
+            elif event.key == K_DOWN:
+                rotate_down = False
 
+    # Update rotation velocity based on key state and acceleration
+    if rotate_left:
+        y_velocity -= rotation_acceleration * delta_time
+    elif rotate_right:
+        y_velocity += rotation_acceleration * delta_time
+    else:
+        if (y_velocity > 0):
+            y_velocity -= min(y_velocity, rotation_decceleration)
+        else:
+            y_velocity += min(-y_velocity, rotation_decceleration)
+        if (-1 < y_velocity < 1):
+            y_velocity = 0
+
+    if rotate_up:
+        x_velocity -= rotation_acceleration * delta_time
+    elif rotate_down:
+        x_velocity += rotation_acceleration * delta_time
+    else:
+        if (x_velocity > 0):
+            x_velocity -= min(x_velocity, rotation_decceleration)
+        else:
+            x_velocity += min(-x_velocity, rotation_decceleration)
+        if (-1 < x_velocity < 1):
+            x_velocity = 0
+
+    # Apply rotation velocity to angles
+    x_angle += x_velocity * delta_time
+    y_angle += y_velocity * delta_time
 
     # Clear the screen and depth buffer
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
