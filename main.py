@@ -42,13 +42,13 @@ class Numpad:
 # Define global functions for joystick handling
 def onJoyPress(app, button, joystick):
     global currentNumber
-    if button == '0':  # 'X' button
-        currentNumber = currentNumber[:-1]
-    elif button == '1':  # 'A' button
-        currentNumber += app.numpad.getCurrentSelection()
-    elif button == '2':  # 'B' button
+    if button == '0':  # 'X' button  no ... i think this B
         checkNumber(app)
         currentNumber = ''
+    elif button == '1':  # 'A' button
+        currentNumber += app.numpad.getCurrentSelection()
+    elif button == '2':  #   'B' button no.. i think si X
+        currentNumber = currentNumber[:-1]
     elif button == '5':
         sys.exit(0)
 
