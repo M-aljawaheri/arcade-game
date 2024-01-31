@@ -63,6 +63,7 @@ def onJoyButtonHold(app, buttons, joystick):
 
 input_cd = time.time()
 def onDigitalJoyAxis(app, results, joystick):
+    global input_cd
     time_since_last = time.time() - input_cd
     if (time_since_last > 0.5):
         input_cd = time.time()
