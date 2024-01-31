@@ -61,7 +61,13 @@ def onJoyButtonHold(app, buttons, joystick):
     elif 'H1' in buttons:  # Right
         app.numpad.moveSelection(1, 0)
 
+input_cd = time.time()
 def onDigitalJoyAxis(app, results, joystick):
+    time_since_last = time.time() - input_cd
+    if (time_since_last > 0.5):
+        input_cd = time.time()
+    else:
+        return
     """This handles movement using the left analog stick on a PS4 controller.
     On the arcade box, this is the joystick.
     
@@ -115,8 +121,6 @@ def redrawAll(app):
         currentNumber = currentNumber + app.numpad.getCurrentSelection()
         checkNumber(app)
 
-    print("hello world")
-    app.numpad.moveSelection(1, 0)
     if showQR:
         currentTime = time.time()
         if currentTime - qrStartTime > 5:
