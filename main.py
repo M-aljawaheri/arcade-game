@@ -127,7 +127,7 @@ def redrawAll(app):
 
     currentTime = time.time()
     if showQR:
-        drawLabel(f"You have {int(currentTime - qrStartTime)} seconds to scan this QR code", app.width//2, 50, size=30)
+        drawLabel(f"You have {30 - int(currentTime - qrStartTime)} seconds to scan this QR code (Location {qrIndex+1})", app.width//2, 50, size=30)
         drawImage(app.qrImages[qrIndex], 100, 100)
     else:
         app.numpad.draw()
