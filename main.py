@@ -72,7 +72,7 @@ def onDigitalJoyAxis(app, results, joystick):
     Axis 0 is Left/Right (-1 left, 1 right)
     So, (1,-1) is up, while (0,1) is right.
     """
-
+    global debouncer
     time_since_debounce = time.time() - debouncer
     if (time_since_debounce > 0.1):
         debouncer = time.time()
