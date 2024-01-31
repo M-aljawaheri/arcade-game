@@ -7,8 +7,9 @@ import time
 
 currentNumber = ''
 text = ''
-showQR = False
+showQR = True
 qrStartTime = 0
+qrIndex = 0
 
 # Define the Numpad class
 class Numpad:
@@ -111,6 +112,7 @@ def redrawAll(app):
     global currentNumber
     global showQR
     global qrStartTime
+    global qrIndex
 
     currentTime = time.time()
     drawLabel(abs(currentTime - qrStartTime), app.width//2, 150, size=20)
@@ -119,8 +121,9 @@ def redrawAll(app):
         if abs(currentTime - qrStartTime) > 30:
             showQR = False
             currentNumber = ''
+            qrIndex = (qrIndex + 1) % len(app.qrImages)
         else:
-            qrIndex = abs(int((currentTime - qrStartTime) / 7.5) % 4)
+            #qrIndex = abs(int((currentTime - qrStartTime) / 7.5) % 4)
             drawLabel(f"You have 30 seconds to scan this QR code", app.width//2, 50, size=30)
             drawImage(app.qrImages[qrIndex], 100, 100)
     else:
