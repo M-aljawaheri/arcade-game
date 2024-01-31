@@ -118,10 +118,9 @@ def redrawAll(app):
             showQR = False
             currentNumber = ''
         else:
-            pass
-            #qrIndex = abs(int((currentTime - qrStartTime) / 7.5) % 4)
-            #drawLabel(f"You have 30 seconds to scan this QR code", app.width//2, 50, size=30)
-            #drawImage(app.qrImages[qrIndex], 100, 100)
+            qrIndex = abs(int((currentTime - qrStartTime) / 7.5) % 4)
+            drawLabel(f"You have 30 seconds to scan this QR code", app.width//2, 50, size=30)
+            drawImage(app.qrImages[qrIndex], 100, 100)
     else:
         app.numpad.draw()
         drawLabel(f"Enter Number: {currentNumber}", app.width//2, 100, size=30)
