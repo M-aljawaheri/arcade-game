@@ -42,11 +42,11 @@ class Numpad:
 # Define global functions for joystick handling
 def onJoyPress(app, button, joystick):
     global currentNumber
-    if button == '3':  # 'X' button  no ... i think this B
+    if button == '3':  # 'Y'
         checkNumber(app)
     elif button == '1':  # 'A' button
         currentNumber += app.numpad.getCurrentSelection()
-    elif button == '2':  #   'B' button no.. i think si X
+    elif button == '2':  #   'X'
         currentNumber = currentNumber[:-1]
     elif button == '5':
         sys.exit(0)
@@ -127,9 +127,9 @@ def redrawAll(app):
         drawLabel(f"Enter Number: {currentNumber}", app.width//2, 100, size=30)
         drawLabel(f"X to backspace", app.width - app.width//7, 200, size=30)
         drawLabel(f"A to enter num", app.width - app.width//7, 240, size=30)
-        drawLabel(f"B to submit", app.width - app.width//7, 280, size=30)
-        if text:
-            drawLabel(app.text, app.width//2, 150, size=20)
+        drawLabel(f"Y to submit", app.width - app.width//7, 280, size=30)
+        #if text:
+        #    drawLabel(app.text, app.width//2, 150, size=20)
 
 # Initialize the app
 runApp(width=800, height=600)
