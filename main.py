@@ -102,7 +102,7 @@ def checkNumber(app):
 
 def onAppStart(app):
     app.numpad = Numpad(app)
-    app.qrImages = ['QR_corridor.png'] # ['QR1.png', 'QR2.png', 'QR3.png', 'QR4.png']
+    app.qrImages = ['arcade-1.png'] # ['QR1.png', 'QR2.png', 'QR3.png', 'QR4.png']
 
 x = 0
 def redrawAll(app):
