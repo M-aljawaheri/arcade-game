@@ -34,6 +34,7 @@ class Numpad:
         row = min(max(row + dy, 0), 2)
         col = min(max(col + dx, 0), 2)
         self.selectedButtonIndex = row * 3 + col
+        self.selectedButtonIndex = min(len(self.buttons)-1, max(self.selectedButtonIndex, 0))
 
     def getCurrentSelection(self):
         return self.buttons[self.selectedButtonIndex]
@@ -61,14 +62,7 @@ def onJoyButtonHold(app, buttons, joystick):
     elif 'H1' in buttons:  # Right
         app.numpad.moveSelection(1, 0)
 
-input_cd = time.time()
 def onDigitalJoyAxis(app, results, joystick):
-    global input_cd
-    time_since_last = time.time() - input_cd
-    if (time_since_last > 0.5):
-        input_cd = time.time()
-    else:
-        return
     """This handles movement using the left analog stick on a PS4 controller.
     On the arcade box, this is the joystick.
     
@@ -109,18 +103,6 @@ def redrawAll(app):
     global currentNumber
     global showQR
     global qrStartTime
-    if x == 1:
-        x += 1
-        currentNumber = currentNumber + app.numpad.getCurrentSelection()
-        currentNumber = currentNumber + app.numpad.getCurrentSelection()
-        app.numpad.moveSelection(0, 1)
-        app.numpad.moveSelection(0, 1)
-        currentNumber = currentNumber + app.numpad.getCurrentSelection()
-        app.numpad.moveSelection(1, 0)
-        app.numpad.moveSelection(1, 0)
-        app.numpad.moveSelection(0, -1)
-        currentNumber = currentNumber + app.numpad.getCurrentSelection()
-        checkNumber(app)
 
     if showQR:
         currentTime = time.time()
@@ -130,7 +112,7 @@ def redrawAll(app):
         else:
             qrIndex = abs(int((currentTime - qrStartTime) / 7.5) % 4)
             #drawLabel(f"You have 30 seconds to scan this QR code", app.width//2, 50, size=30)
-            #drawImage(app.qrImages[qrIndex], 100, 100)
+            drawImage(app.qrImages[qrIndex], 100, 100)
     else:
         app.numpad.draw()
         drawLabel(f"Enter Number: {currentNumber}", app.width//2, 100, size=30)
