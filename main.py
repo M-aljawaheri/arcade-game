@@ -8,8 +8,6 @@ import numpy as np
 
 import joystick
 
-
-
 # Initialize Pygame
 pygame.init()
 display = (800, 600)
@@ -173,6 +171,3 @@ def onDigitalJoyAxis(app, results, joystick):
     elif (0, 1) in results:     # right
         # Apply rotation
         x_angle += 5
-
-
-

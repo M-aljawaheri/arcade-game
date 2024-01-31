@@ -1,6 +1,7 @@
 
 import pygame
-from cmu_graphics import almostEqual, pygameEvent, onStepEvent
+from cmu_graphics import almostEqual
+from cmu_graphics.cmu_graphics import pygameEvent, onStepEvent
 
 _allJoyButtonsDown = dict()
 _allDigitalJoyAxisDown = dict()
