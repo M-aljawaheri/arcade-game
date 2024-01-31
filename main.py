@@ -42,7 +42,7 @@ class Numpad:
 # Define global functions for joystick handling
 def onJoyPress(app, button, joystick):
     global currentNumber
-    if button == '0':  # 'X' button  no ... i think this B
+    if button == '3':  # 'X' button  no ... i think this B
         checkNumber(app)
     elif button == '1':  # 'A' button
         currentNumber += app.numpad.getCurrentSelection()
