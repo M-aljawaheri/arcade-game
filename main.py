@@ -44,7 +44,6 @@ def onJoyPress(app, button, joystick):
     global currentNumber
     if button == '0':  # 'X' button  no ... i think this B
         checkNumber(app)
-        currentNumber = ''
     elif button == '1':  # 'A' button
         currentNumber += app.numpad.getCurrentSelection()
     elif button == '2':  #   'B' button no.. i think si X
