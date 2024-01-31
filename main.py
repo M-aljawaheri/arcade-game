@@ -62,6 +62,8 @@ def onJoyButtonHold(app, buttons, joystick):
     elif 'H1' in buttons:  # Right
         app.numpad.moveSelection(1, 0)
 
+
+debouncer = time.time()
 def onDigitalJoyAxis(app, results, joystick):
     """This handles movement using the left analog stick on a PS4 controller.
     On the arcade box, this is the joystick.
@@ -70,10 +72,17 @@ def onDigitalJoyAxis(app, results, joystick):
     Axis 0 is Left/Right (-1 left, 1 right)
     So, (1,-1) is up, while (0,1) is right.
     """
+
+    time_since_debounce = time.time() - debouncer
+    if (time_since_debounce > 0.1):
+        debouncer = time.time()
+    else:
+        return
+
     if (1, -1) in results:
-        app.numpad.moveSelection(0, 1)
-    elif (1, 1) in results:
         app.numpad.moveSelection(0, -1)
+    elif (1, 1) in results:
+        app.numpad.moveSelection(0, 1)
 
     if (0, -1) in results:
         app.numpad.moveSelection(-1, 0)
