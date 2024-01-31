@@ -10,6 +10,7 @@ text = ''
 showQR = False
 qrStartTime = 0
 qrIndex = 0
+MAX_TIME = 30
 
 # Define the Numpad class
 class Numpad:
@@ -113,7 +114,7 @@ def onStep(app):
     global qrIndex
     currentTime = time.time()
     if showQR:
-        if abs(currentTime - qrStartTime) > 30:
+        if abs(currentTime - qrStartTime) > MAX_TIME:
             showQR = False
             currentNumber = ''
             qrIndex = (qrIndex + 1) % len(app.qrImages)
@@ -127,7 +128,7 @@ def redrawAll(app):
 
     currentTime = time.time()
     if showQR:
-        drawLabel(f"You have {30 - int(currentTime - qrStartTime)} seconds to scan this QR code (Location {qrIndex+1})", app.width//2, 50, size=30)
+        drawLabel(f"You have {MAX_TIME - int(currentTime - qrStartTime)} seconds to scan this QR code (Location {qrIndex+1})", app.width//2, 50, size=30)
         drawImage(app.qrImages[qrIndex], 100, 100)
     else:
         app.numpad.draw()
