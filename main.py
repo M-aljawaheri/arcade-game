@@ -112,9 +112,11 @@ def redrawAll(app):
     global showQR
     global qrStartTime
 
+    drawLabel(abs(currentTime - qrStartTime), app.width//2, 150, size=20)
+
     if showQR:
         currentTime = time.time()
-        if currentTime - qrStartTime > 30:
+        if abs(currentTime - qrStartTime) > 30:
             showQR = False
             currentNumber = ''
         else:
@@ -127,8 +129,9 @@ def redrawAll(app):
         drawLabel(f"X to backspace", app.width - app.width//7, 200, size=30)
         drawLabel(f"A to enter num", app.width - app.width//7, 240, size=30)
         drawLabel(f"Y to submit", app.width - app.width//7, 280, size=30)
-        #if text:
-        #    drawLabel(app.text, app.width//2, 150, size=20)
+        if text:
+            drawLabel(text, app.width//2, 150, size=20)
+            
 
 # Initialize the app
 runApp(width=800, height=600)
