@@ -1,173 +1,121 @@
-import time
-import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
-import numpy as np
-
+# Import necessary modules
+from cmu_graphics import *
 import joystick
+import sys
+import random
+import time
 
-# Initialize Pygame
-pygame.init()
-display = (800, 600)
-pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+currentNumber = ''
+text = ''
+showQR = False
+qrStartTime = 0
 
-# Perspective setup
-gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-glTranslatef(0.0, 0.0, -5)
+# Define the Numpad class
+class Numpad:
+    def __init__(self, app):
+        self.app = app
+        self.buttons = [str(i) for i in range(1, 10)] + ['0', '0', '0']
+        self.selectedButtonIndex = 0
 
-# Cube vertices and edges
-vertices = (
-    (1, -1, -1),
-    (1, 1, -1),
-    (-1, 1, -1),
-    (-1, -1, -1),
-    (1, -1, 1),
-    (1, 1, 1),
-    (-1, 1, 1),
-    (-1, -1, 1),
-)
+    def draw(self):
+        for i, button in enumerate(self.buttons):
+            x = 150 + (i % 3) * 100
+            y = 200 + (i // 3) * 100
+            if i == self.selectedButtonIndex:
+                fillColor = 'yellow'
+            else:
+                fillColor = 'white'
+            drawRect(x, y, 80, 80, fill=fillColor)
+            drawLabel(button, x + 40, y + 40, size=30)
 
-edges = (
-    (0, 1),
-    (1, 2),
-    (2, 3),
-    (3, 0),
-    (4, 5),
-    (5, 6),
-    (6, 7),
-    (7, 4),
-    (0, 4),
-    (1, 5),
-    (2, 6),
-    (3, 7)
-)
+    def moveSelection(self, dx, dy):
+        row = self.selectedButtonIndex // 3
+        col = self.selectedButtonIndex % 3
+        row = min(max(row + dy, 0), 2)
+        col = min(max(col + dx, 0), 2)
+        self.selectedButtonIndex = row * 3 + col
 
-# Function to draw the cube
-def Cube():
-    glBegin(GL_LINES)
-    for edge in edges:
-        for vertex in edge:
-            glVertex3fv(vertices[vertex])
-    glEnd()
+    def getCurrentSelection(self):
+        return self.buttons[self.selectedButtonIndex]
 
-x_angle = 0
-y_angle = 0
-rotate_left = rotate_right = rotate_up = rotate_down = False
-x_velocity = y_velocity = 0
-rotation_acceleration = 90  # Degrees per second per second
-rotation_decceleration = 1.5  # Degrees per second per second
-
-# Main loop
-running = True
-last_time = time.time()
-while running:
-    current_time = time.time()
-    delta_time = current_time - last_time
-    last_time = current_time
-
-
-    # Event handling
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == KEYDOWN:
-            if event.key == K_LEFT:
-                rotate_left = True
-            elif event.key == K_RIGHT:
-                rotate_right = True
-            elif event.key == K_UP:
-                rotate_up = True
-            elif event.key == K_DOWN:
-                rotate_down = True
-        elif event.type == KEYUP:
-            if event.key == K_LEFT:
-                rotate_left = False
-            elif event.key == K_RIGHT:
-                rotate_right = False
-            elif event.key == K_UP:
-                rotate_up = False
-            elif event.key == K_DOWN:
-                rotate_down = False
-
-    # Update rotation velocity based on key state and acceleration
-    if rotate_left:
-        y_velocity -= rotation_acceleration * delta_time
-    elif rotate_right:
-        y_velocity += rotation_acceleration * delta_time
-    else:
-        if (y_velocity > 0):
-            y_velocity -= min(y_velocity, rotation_decceleration)
-        else:
-            y_velocity += min(-y_velocity, rotation_decceleration)
-        if (-1 < y_velocity < 1):
-            y_velocity = 0
-
-    if rotate_up:
-        x_velocity -= rotation_acceleration * delta_time
-    elif rotate_down:
-        x_velocity += rotation_acceleration * delta_time
-    else:
-        if (x_velocity > 0):
-            x_velocity -= min(x_velocity, rotation_decceleration)
-        else:
-            x_velocity += min(-x_velocity, rotation_decceleration)
-        if (-1 < x_velocity < 1):
-            x_velocity = 0
-
-    # Apply rotation velocity to angles
-    x_angle += x_velocity * delta_time
-    y_angle += y_velocity * delta_time
-
-    # Clear the screen and depth buffer
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-
-    # Reset transformations and set the rotation
-    glLoadIdentity()
-    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    glTranslatef(0.0, 0.0, -5)
-    glRotatef(x_angle, 1, 0, 0)  # Rotate up or down
-    glRotatef(y_angle, 0, 1, 0)  # Rotate left or right
-
-    # Draw the cube
-    Cube()
-
-    # Swap the display buffers
-    pygame.display.flip()
-    pygame.time.wait(10)
-
-pygame.quit()
-
+# Define global functions for joystick handling
 def onJoyPress(app, button, joystick):
-    if button == '5':
+    global currentNumber
+    if button == '0':  # 'X' button
+        currentNumber = currentNumber[:-1]
+    elif button == '1':  # 'A' button
+        currentNumber += app.numpad.getCurrentSelection()
+    elif button == '2':  # 'B' button
+        checkNumber(app)
+        currentNumber = ''
+    elif button == '5':
         sys.exit(0)
 
-def onJoyRelease(app, button, joystick):
-    """Tells you when a button is released on which joystick"""
-    print(f"Joystick {joystick} button released: {button}")
-
-
 def onJoyButtonHold(app, buttons, joystick):
-    pass
+    if 'H0' in buttons:  # Up
+        app.numpad.moveSelection(0, -1)
+    elif 'H2' in buttons:  # Down
+        app.numpad.moveSelection(0, 1)
+    if 'H3' in buttons:  # Left
+        app.numpad.moveSelection(-1, 0)
+    elif 'H1' in buttons:  # Right
+        app.numpad.moveSelection(1, 0)
 
-def onDigitalJoyAxis(app, results, joystick):
-    """This handles movement using the left analog stick on a PS4 controller.
-    On the arcade box, this is the joystick.
+def checkNumber(app):
+    global currentNumber
+    global showQR
+    global qrStartTime
+    global text
+    if currentNumber == '1176':
+        showQR = True
+        qrStartTime = time.time()
+    else:
+        text = "Wrong number. Try again!"
+        currentNumber = ''
 
-    Axis 1 is Up/Down (-1 up, 1 down)
-    Axis 0 is Left/Right (-1 left, 1 right)
-    So, (1,-1) is up, while (0,1) is right.
-    """
-    app.text = f"Joystick {joystick} axis being held: {results}"
-    if (1, -1) in results:      # up
-        y_angle += 5
-    elif (1, 1) in results:     # down
-        y_angle -=5
+def onAppStart(app):
+    app.numpad = Numpad(app)
+    app.qrImages = ['QR_corridor.png'] # ['QR1.png', 'QR2.png', 'QR3.png', 'QR4.png']
 
-    if (0, -1) in results:      # left
-        # Apply rotation
-        x_angle -=5
-    elif (0, 1) in results:     # right
-        # Apply rotation
-        x_angle += 5
+x = 0
+def redrawAll(app):
+    global x
+    global text
+    global currentNumber
+    global showQR
+    global qrStartTime
+    if x == 1:
+        x += 1
+        currentNumber = currentNumber + app.numpad.getCurrentSelection()
+        currentNumber = currentNumber + app.numpad.getCurrentSelection()
+        app.numpad.moveSelection(0, 1)
+        app.numpad.moveSelection(0, 1)
+        currentNumber = currentNumber + app.numpad.getCurrentSelection()
+        app.numpad.moveSelection(1, 0)
+        app.numpad.moveSelection(1, 0)
+        app.numpad.moveSelection(0, -1)
+        currentNumber = currentNumber + app.numpad.getCurrentSelection()
+        checkNumber(app)
+
+    print("hello world")
+    app.numpad.moveSelection(1, 0)
+    if showQR:
+        currentTime = time.time()
+        if currentTime - qrStartTime > 5:
+            showQR = False
+            currentNumber = ''
+        else:
+            qrIndex = abs(int((currentTime - qrStartTime) / 7.5) % 4)
+            #drawLabel(f"You have 30 seconds to scan this QR code", app.width//2, 50, size=30)
+            #drawImage(app.qrImages[qrIndex], 100, 100)
+    else:
+        app.numpad.draw()
+        drawLabel(f"Enter Number: {currentNumber}", app.width//2, 100, size=30)
+        drawLabel(f"X to backspace", app.width - app.width//7, 200, size=30)
+        drawLabel(f"A to enter num", app.width - app.width//7, 240, size=30)
+        drawLabel(f"B to submit", app.width - app.width//7, 280, size=30)
+        if text:
+            drawLabel(app.text, app.width//2, 150, size=20)
+
+# Initialize the app
+runApp(width=800, height=600)
