@@ -104,7 +104,7 @@ def checkNumber(app):
 
 def onAppStart(app):
     app.numpad = Numpad(app)
-    app.qrImages = ['arcade-1.png', 'arcade-2.png', 'arcade-3.png', 'arcade-4.png']
+    app.qrImages = ['arcade-0.png', 'arcade-1.png', 'arcade-2.png', 'arcade-3.png']
 
 def onStep(app):
     global text
