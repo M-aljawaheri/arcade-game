@@ -61,6 +61,24 @@ def onJoyButtonHold(app, buttons, joystick):
     elif 'H1' in buttons:  # Right
         app.numpad.moveSelection(1, 0)
 
+def onDigitalJoyAxis(app, results, joystick):
+    """This handles movement using the left analog stick on a PS4 controller.
+    On the arcade box, this is the joystick.
+    
+    Axis 1 is Up/Down (-1 up, 1 down)
+    Axis 0 is Left/Right (-1 left, 1 right)
+    So, (1,-1) is up, while (0,1) is right.
+    """
+    if (1, -1) in results:
+        app.numpad.moveSelection(0, 1)
+    elif (1, 1) in results:
+        app.numpad.moveSelection(0, -1)
+
+    if (0, -1) in results:
+        app.numpad.moveSelection(-1, 0)
+    elif (0, 1) in results:
+        app.numpad.moveSelection(1, 0)
+
 def checkNumber(app):
     global currentNumber
     global showQR
