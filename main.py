@@ -112,10 +112,10 @@ def redrawAll(app):
     global showQR
     global qrStartTime
 
+    currentTime = time.time()
     drawLabel(abs(currentTime - qrStartTime), app.width//2, 150, size=20)
 
     if showQR:
-        currentTime = time.time()
         if abs(currentTime - qrStartTime) > 30:
             showQR = False
             currentNumber = ''
