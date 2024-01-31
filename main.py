@@ -7,7 +7,7 @@ import time
 
 currentNumber = ''
 text = ''
-showQR = True
+showQR = False
 qrStartTime = 0
 qrIndex = 0
 
@@ -74,7 +74,7 @@ def onDigitalJoyAxis(app, results, joystick):
     """
     global debouncer
     time_since_debounce = time.time() - debouncer
-    if (time_since_debounce > 0.1):
+    if (time_since_debounce > 0.2):
         debouncer = time.time()
     else:
         return
@@ -103,29 +103,31 @@ def checkNumber(app):
 
 def onAppStart(app):
     app.numpad = Numpad(app)
-    app.qrImages = ['arcade-1.png'] # ['QR1.png', 'QR2.png', 'QR3.png', 'QR4.png']
+    app.qrImages = ['arcade-1.png', 'arcade-2.png', 'arcade-3.png', 'arcade-4.png']
 
-x = 0
+def onStep(app):
+    global text
+    global currentNumber
+    global showQR
+    global qrStartTime
+    global qrIndex
+    currentTime = time.time()
+    if showQR:
+        if abs(currentTime - qrStartTime) > 30:
+            showQR = False
+            currentNumber = ''
+            qrIndex = (qrIndex + 1) % len(app.qrImages)
+
 def redrawAll(app):
-    global x
     global text
     global currentNumber
     global showQR
     global qrStartTime
     global qrIndex
 
-    currentTime = time.time()
-    drawLabel(abs(currentTime - qrStartTime), app.width//2, 150, size=20)
-
     if showQR:
-        if abs(currentTime - qrStartTime) > 30:
-            showQR = False
-            currentNumber = ''
-            qrIndex = (qrIndex + 1) % len(app.qrImages)
-        else:
-            #qrIndex = abs(int((currentTime - qrStartTime) / 7.5) % 4)
-            drawLabel(f"You have 30 seconds to scan this QR code", app.width//2, 50, size=30)
-            drawImage(app.qrImages[qrIndex], 100, 100)
+        drawLabel(f"You have 30 seconds to scan this QR code", app.width//2, 50, size=30)
+        drawImage(app.qrImages[qrIndex], 100, 100)
     else:
         app.numpad.draw()
         drawLabel(f"Enter Number: {currentNumber}", app.width//2, 100, size=30)
